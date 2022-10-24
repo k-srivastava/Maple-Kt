@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    implementation("org.lwjgl.lwjgl:lwjgl:2.9.2")
+    implementation("org.lwjgl.lwjgl:lwjgl:2.9.3")
 }
 
 tasks.test {

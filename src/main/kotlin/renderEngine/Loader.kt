@@ -6,6 +6,7 @@ import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30
 import java.nio.FloatBuffer
+import java.nio.IntBuffer
 
 /**
  * Load a model by putting its vertex information into a VBO which is stored in the attribute list of a VAO.
@@ -35,6 +36,34 @@ class Loader {
     }
 
     /**
+     * Store the vertex data in a new float buffer.
+     *
+     * @param data Vertex data to be stored in a new float buffer.
+     * @return Float buffer with vertex data.
+     */
+    private fun storeDataInFloatBuffer(data: FloatArray): FloatBuffer {
+        val buffer = BufferUtils.createFloatBuffer(data.size)
+        buffer.put(data)
+        buffer.flip()
+
+        return buffer
+    }
+
+    /**
+     * Store the vertex data in a new int buffer.
+     *
+     * @param data Vertex data to be stored in a new int buffer.
+     * @return Int buffer with vertex data.
+     */
+    private fun storeDataInIntBuffer(data: IntArray): IntBuffer {
+        val buffer = BufferUtils.createIntBuffer(data.size)
+        buffer.put(data)
+        buffer.flip()
+
+        return buffer
+    }
+
+    /**
      * Store the vertex data in an attribute list in a particular slot.
      *
      * @param attributeNumber Slot number of where data is stored.
@@ -52,32 +81,31 @@ class Loader {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0)
     }
 
-    /**
-     * Store the vertex data in a new float buffer.
-     *
-     * @param data Vertex data to be stored in a new float buffer.
-     * @return Float buffer with vertex data.
-     */
-    private fun storeDataInFloatBuffer(data: FloatArray): FloatBuffer {
-        val buffer = BufferUtils.createFloatBuffer(data.size)
-        buffer.put(data)
-        buffer.flip()
+    private fun bindIndicesBuffer(indices: IntArray) {
+        val vboID: Int = GL15.glGenBuffers()
+        vertexBufferObjects.add(vboID)
+        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vboID)
 
-        return buffer
+        val buffer = storeDataInIntBuffer(indices)
+        GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW)
     }
 
     /**
      * Load a model's vertex positions in a VAO.
      *
      * @param positions Vertex positions of the model.
+     * @param indices   Indices of vertex positions of the model.
      * @return Raw model stored in a VAO.
      */
-    fun loadToVAO(positions: FloatArray): RawModel {
+    fun loadToVAO(positions: FloatArray, indices: IntArray): RawModel {
         val vaoID: Int = createVAO()
+
+        bindIndicesBuffer(indices)
         storeDataInAttributeList(0, positions)
+
         unbindVAO()
 
-        return RawModel(vaoID, positions.size)
+        return RawModel(vaoID, indices.size)
     }
 
     /**

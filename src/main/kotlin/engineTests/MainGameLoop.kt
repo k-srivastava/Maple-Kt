@@ -17,12 +17,15 @@ fun main() {
         -0.5f, 0.5f, 0f,
         -0.5f, -0.5f, 0f,
         0.5f, -0.5f, 0f,
-        0.5f, -0.5f, 0f,
-        0.5f, 0.5f, 0f,
-        -0.5f, 0.5f, 0f
+        0.5f, 0.5f, 0f
     )
 
-    val model: RawModel = loader.loadToVAO(vertices)
+    // Index for rendering order of vertices for a rectangle.
+    val indices = intArrayOf(
+        0, 1, 3,
+        3, 1, 2
+    )
+    val model: RawModel = loader.loadToVAO(vertices, indices)
 
     while (!Display.isCloseRequested()) {
         renderer.prepare()

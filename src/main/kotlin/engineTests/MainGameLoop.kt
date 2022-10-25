@@ -5,12 +5,14 @@ package engineTests
 
 import org.lwjgl.opengl.Display
 import renderEngine.*
+import shaders.StaticShader
 
 fun main() {
+    createDisplay()
+
     val loader = Loader()
     val renderer = Renderer()
-
-    createDisplay()
+    val shader = StaticShader()
 
     // Vertex positions for a rectangle.
     val vertices = floatArrayOf(
@@ -25,14 +27,21 @@ fun main() {
         0, 1, 3,
         3, 1, 2
     )
+
     val model: RawModel = loader.loadToVAO(vertices, indices)
 
     while (!Display.isCloseRequested()) {
         renderer.prepare()
+
+        shader.start()
         renderer.render(model)
+        shader.stop()
+
         updateDisplay()
     }
 
+    shader.cleanUp()
     loader.cleanUp()
+
     closeDisplay()
 }
